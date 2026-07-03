@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>道場QRメーカー・デザイン工房</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A41;
+    --washi:#F3EEE0;
+    --washi-deep:#EAE2CC;
+    --hanko:#BC3C29;
+    --hanko-deep:#9A2F1F;
+    --bamboo:#4C6444;
+    --sumi:#6B6459;
+    --gold:#B8933E;
+    --card:#FFFDF7;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--washi);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(184,147,62,0.08) 0, transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(76,100,68,0.06) 0, transparent 45%);
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 18px;}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:38px 18px 26px;
+    text-align:center;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.28em;
+    color:var(--sumi);
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:30px;
+    line-height:1.4;
+    margin:0 0 8px;
+    letter-spacing:.02em;
+  }
+  h1 span{color:var(--hanko);}
+  .sub{
+    font-size:13.5px;
+    color:var(--sumi);
+    line-height:1.7;
+  }
+  .rule{
+    width:64px;height:3px;margin:18px auto 0;
+    background:linear-gradient(90deg,var(--gold),transparent);
+    border-radius:2px;
+  }
+
+  /* ---------- Step card ---------- */
+  .step{
+    background:var(--card);
+    border:1px solid rgba(27,42,65,0.08);
+    border-radius:18px;
+    padding:22px 20px 26px;
+    margin:0 0 22px;
+    box-shadow:0 2px 0 rgba(27,42,65,0.04), 0 12px 24px -18px rgba(27,42,65,0.35);
+    position:relative;
+  }
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .step-num{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:14px;
+    color:var(--card);
+    background:var(--ink);
+    width:26px;height:26px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:17px;
+  }
+  .step-desc{
+    font-size:12.5px;
+    color:var(--sumi);
+    margin:-8px 0 16px 36px;
+    line-height:1.6;
+  }
+
+  input[type=url], textarea{
+    width:100%;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:15px;
+    padding:13px 14px;
+    border:1.5px solid var(--washi-deep);
+    background:#FCFAF3;
+    border-radius:11px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  input[type=url]:focus, textarea:focus{border-color:var(--gold);}
+  textarea{resize:vertical;min-height:64px;line-height:1.6;}
+
+  .btn{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    border-radius:11px;
+    padding:14px 18px;
+    cursor:pointer;
+    width:100%;
+    transition:transform .1s, box-shadow .15s, opacity .15s;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{
+    background:var(--hanko);
+    color:#fff;
+    margin-top:14px;
+    box-shadow:0 8px 18px -8px rgba(188,60,41,0.55);
+  }
+  .btn-primary:hover{background:var(--hanko-deep);}
+  .btn-ghost{
+    background:transparent;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+  }
+
+  /* ---------- QR certificate frame ---------- */
+  .cert{
+    display:none;
+    margin-top:20px;
+    background:var(--washi);
+    border:2px solid var(--ink);
+    border-radius:14px;
+    padding:22px 18px 18px;
+    position:relative;
+    text-align:center;
+    animation:fadein .35s ease;
+  }
+  .cert.show{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .cert::before, .cert::after{
+    content:"";
+    position:absolute;
+    width:16px;height:16px;
+    border:2px solid var(--gold);
+  }
+  .cert::before{top:6px;left:6px;border-right:none;border-bottom:none;}
+  .cert::after{bottom:6px;right:6px;border-left:none;border-top:none;}
+  #qrImg{
+    width:220px;height:220px;
+    background:#fff;
+    padding:10px;
+    border-radius:8px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
+  }
+  .stamp{
+    position:absolute;
+    top:10px;right:16px;
+    width:52px;height:52px;
+    border-radius:50%;
+    border:2.5px solid var(--hanko);
+    color:var(--hanko);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:11px;
+    line-height:1.2;
+    text-align:center;
+    transform:rotate(8deg);
+    opacity:0.85;
+  }
+  .cert-note{
+    font-size:12px;
+    color:var(--sumi);
+    margin-top:14px;
+    line-height:1.7;
+  }
+  .cert-actions{
+    display:flex;gap:8px;margin-top:12px;
+  }
+  .cert-actions a, .cert-actions button{
+    flex:1;
+    font-size:13px;
+    font-weight:700;
+    padding:10px;
+    border-radius:9px;
+    text-decoration:none;
+    text-align:center;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    background:#fff;
+    cursor:pointer;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+  }
+
+  /* ---------- Chips ---------- */
+  .chip-label{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--sumi);
+    margin:16px 0 8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .chip-label:first-child{margin-top:0;}
+  .chip-label .opt{font-weight:400;font-size:11px;color:#A39C8C;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-size:13px;
+    padding:8px 14px;
+    border-radius:999px;
+    border:1.5px solid var(--washi-deep);
+    background:#FCFAF3;
+    color:var(--sumi);
+    cursor:pointer;
+    transition:all .12s;
+    user-select:none;
+  }
+  .chip:hover{border-color:var(--gold);}
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:#fff;
+  }
+
+  /* ---------- Prompt output ---------- */
+  .promptbox{
+    display:none;
+    margin-top:18px;
+    background:#FCFAF3;
+    border:1.5px dashed var(--gold);
+    border-radius:12px;
+    padding:16px;
+    animation:fadein .35s ease;
+  }
+  .promptbox.show{display:block;}
+  .promptbox pre{
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:13.5px;
+    line-height:1.8;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+  .copied-flag{
+    font-size:12px;
+    color:var(--bamboo);
+    font-weight:700;
+    margin-top:8px;
+    text-align:center;
+    display:none;
+  }
+  .copied-flag.show{display:block;}
+
+  /* ---------- Guide ---------- */
+  .guide{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:6px;
+  }
+  .guide .g{
+    flex:1;
+    text-align:center;
+    font-size:11.5px;
+    color:var(--sumi);
+    line-height:1.5;
+  }
+  .guide .g .n{
+    width:28px;height:28px;
+    border-radius:50%;
+    background:var(--washi-deep);
+    color:var(--ink);
+    font-weight:800;
+    font-family:'Shippori Mincho', serif;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 6px;
+    font-size:13px;
+  }
+
+  footer{
+    text-align:center;
+    font-size:11.5px;
+    color:#A39C8C;
+    margin-top:10px;
+    line-height:1.8;
+  }
+</style>
+<link rel="apple-touch-icon" href="./icon.png">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">AI アプリ道場 ・ 道具二刀流</div>
+    <h1>道場QR<span>メーカー</span><br>デザイン工房</h1>
+    <p class="sub">QRを爆速生成 → デザインの希望を選ぶだけで、<br>ChatGPT / Geminiに渡す「まるなげ用プロンプト」を作ります。</p>
+    <div class="rule"></div>
+  </header>
+
+  <!-- STEP 1: QR生成 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div class="step-title">QRコードを作る</div>
+    </div>
+    <div class="step-desc">URL（アプリ・note記事・商品ページなど）を入れてください</div>
+    <input type="url" id="urlInput" placeholder="https://example.com/..." autocomplete="off">
+    <button class="btn btn-primary" onclick="makeQR()">⚡ QRコードを作る</button>
+
+    <div class="cert" id="cert">
+      <div class="stamp">道場<br>印</div>
+      <img id="qrImg" alt="生成されたQRコード">
+      <div class="cert-note">📸 このQRコードをスクリーンショット（長押し保存）してください。<br>これをこのあとAIに渡します。</div>
+      <div class="cert-actions">
+        <a id="dlLink" download="dojo-qr.png" href="#">画像を保存</a>
+        <button onclick="copyImgUrl()">画像URLをコピー</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: デザイン設定 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div class="step-title">デザインの希望を選ぶ</div>
+    </div>
+    <div class="step-desc">選ぶだけでOK。空欄があってもプロンプトは作れます</div>
+
+    <div class="chip-label">スタイル</div>
+    <div class="chips" data-group="style">
+      <div class="chip">シンプル可愛い</div>
+      <div class="chip">高級・上品</div>
+      <div class="chip">和風</div>
+      <div class="chip">ポップ</div>
+      <div class="chip">ナチュラル</div>
+      <div class="chip">サイバー未来</div>
+      <div class="chip">手描き風</div>
+      <div class="chip">ミニマル</div>
+    </div>
+
+    <div class="chip-label">色の雰囲気</div>
+    <div class="chips" data-group="color">
+      <div class="chip">暖色系</div>
+      <div class="chip">寒色系</div>
+      <div class="chip">パステル</div>
+      <div class="chip">モノトーン</div>
+      <div class="chip">ビビッド</div>
+      <div class="chip">おまかせ</div>
+    </div>
+
+    <div class="chip-label">用途 <span class="opt">(任意)</span></div>
+    <div class="chips" data-group="usage">
+      <div class="chip">商品パッケージ</div>
+      <div class="chip">SNS投稿</div>
+      <div class="chip">名刺</div>
+      <div class="chip">チラシ</div>
+      <div class="chip">お店の看板</div>
+    </div>
+
+    <div class="chip-label">モチーフ・テーマ <span class="opt">(自由入力・任意)</span></div>
+    <input type="url" id="motifInput" placeholder="例：家庭菜園、空手、手作りジャム、カフェ" style="margin-bottom:0;">
+
+    <div class="chip-label">追加の要望 <span class="opt">(自由入力・任意)</span></div>
+    <textarea id="extraInput" placeholder="例：文字は入れないで／背景は暗めで／木のぬくもりを感じる感じで"></textarea>
+  </div>
+
+  <!-- STEP 3: プロンプト生成 -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div class="step-title">プロンプトを作る</div>
+    </div>
+    <div class="step-desc">読み取り精度を守る指示は自動で入ります</div>
+    <button class="btn btn-primary" onclick="makePrompt()">🖌 プロンプトを作る</button>
+
+    <div class="promptbox" id="promptbox">
+      <pre id="promptText"></pre>
+      <button class="btn btn-ghost" onclick="copyPrompt()">📋 プロンプトをコピー</button>
+      <div class="copied-flag" id="copiedFlag">コピーしました！ChatGPTかGeminiに貼り付けてください</div>
+    </div>
+  </div>
+
+  <!-- Guide -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">?</div>
+      <div class="step-title">使い方</div>
+    </div>
+    <div class="guide">
+      <div class="g"><div class="n">1</div>QRを<br>スクショ</div>
+      <div class="g"><div class="n">2</div>プロンプトを<br>コピー</div>
+      <div class="g"><div class="n">3</div>ChatGPT/Geminiに<br>画像＋テキストを貼付</div>
+    </div>
+  </div>
+
+  <footer>道場QRメーカー・デザイン工房 ｜ 押忍！<br>QR生成：外部無料APIに出前中</footer>
+</div>
+
+<script>
+  let currentQrUrl = "";
+
+  function makeQR(){
+    const url = document.getElementById('urlInput').value.trim();
+    if(!url){ alert('URLを入れてください'); return; }
+    const qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=12&data=' + encodeURIComponent(url);
+    currentQrUrl = qrApi;
+    document.getElementById('qrImg').src = qrApi;
+    document.getElementById('dlLink').href = qrApi;
+    document.getElementById('cert').classList.add('show');
+    document.getElementById('cert').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function copyImgUrl(){
+    if(!currentQrUrl){ return; }
+    navigator.clipboard.writeText(currentQrUrl).then(()=>{
+      alert('画像URLをコピーしました');
+    }).catch(()=>{ alert('コピーに失敗しました。長押しで画像を保存してください。'); });
+  }
+
+  // chip toggle (single select per group)
+  document.querySelectorAll('.chips').forEach(group=>{
+    group.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        const already = chip.classList.contains('active');
+        group.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+        if(!already) chip.classList.add('active');
+      });
+    });
+  });
+
+  function getActive(groupName){
+    const group = document.querySelector('.chips[data-group="'+groupName+'"]');
+    const active = group.querySelector('.chip.active');
+    return active ? active.textContent : '';
+  }
+
+  function makePrompt(){
+    const style = getActive('style');
+    const color = getActive('color');
+    const usage = getActive('usage');
+    const motif = document.getElementById('motifInput').value.trim();
+    const extra = document.getElementById('extraInput').value.trim();
+
+    let lines = [];
+    lines.push('添付したQRコード画像をもとに、周囲や背景をデザインしてください。');
+    lines.push('');
+    lines.push('【絶対条件】');
+    lines.push('・QRコードの白黒モジュール構造、コントラスト、余白（クワイエットゾーン）は変更しないこと。');
+    lines.push('・生成後もQRコードとして正常にスキャンできる状態を保つこと。');
+    lines.push('・読み取り部分を隠したり歪めたりせず、デザインをその周りに自然に融合させること。');
+    lines.push('');
+    lines.push('【デザインの希望】');
+    if(style) lines.push('・スタイル：' + style);
+    if(color) lines.push('・色の雰囲気：' + color);
+    if(motif) lines.push('・モチーフ／テーマ：' + motif);
+    if(usage) lines.push('・用途：' + usage);
+    if(extra) lines.push('・その他の要望：' + extra);
+    if(!style && !color && !motif && !usage && !extra){
+      lines.push('・おまかせで、世界に一つだけのおしゃれなQRコードにしてください。');
+    }
+    lines.push('');
+    lines.push('世界に一つだけの、プロが作ったようなアートQRコードにしてください。');
+
+    document.getElementById('promptText').textContent = lines.join('\n');
+    document.getElementById('promptbox').classList.add('show');
+    document.getElementById('copiedFlag').classList.remove('show');
+    document.getElementById('promptbox').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function copyPrompt(){
+    const text = document.getElementById('promptText').textContent;
+    navigator.clipboard.writeText(text).then(()=>{
+      document.getElementById('copiedFlag').classList.add('show');
+    }).catch(()=>{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      document.getElementById('copiedFlag').classList.add('show');
+    });
+  }
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>r.unregister());
+  }).then(()=>{
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
+</script>
+</body>
+</html>
