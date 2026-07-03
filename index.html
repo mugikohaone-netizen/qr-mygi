@@ -306,6 +306,131 @@
     margin-top:10px;
     line-height:1.8;
   }
+
+  /* ---------- Character / logo registration ---------- */
+  .charzone{
+    border:1.5px dashed var(--washi-deep);
+    border-radius:12px;
+    padding:16px;
+  }
+  .char-form-row{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+  .thumb-picker{
+    width:64px;height:64px;
+    border-radius:12px;
+    border:1.5px dashed var(--washi-deep);
+    background:#FCFAF3;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;
+    color:var(--sumi);
+    text-align:center;
+    line-height:1.3;
+    cursor:pointer;
+    overflow:hidden;
+    position:relative;
+  }
+  .thumb-picker.has-img{border-style:solid;border-color:var(--gold);}
+  .thumb-picker img{width:100%;height:100%;object-fit:cover;}
+  .thumb-picker input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .char-fields{flex:1;display:flex;flex-direction:column;gap:6px;}
+  .char-fields input{
+    width:100%;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:13.5px;
+    padding:9px 11px;
+    border:1.5px solid var(--washi-deep);
+    background:#FCFAF3;
+    border-radius:9px;
+    color:var(--ink);
+    outline:none;
+  }
+  .char-fields input:focus{border-color:var(--gold);}
+  .char-hint{font-size:11.5px;color:var(--sumi);margin:2px 0 12px;line-height:1.6;}
+  .btn-add{
+    width:100%;
+    font-size:13px;
+    font-weight:700;
+    padding:10px;
+    border-radius:9px;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    background:#fff;
+    cursor:pointer;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+  }
+
+  .char-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .char-card{
+    display:flex;align-items:center;gap:10px;
+    background:#FCFAF3;
+    border:1.5px solid var(--washi-deep);
+    border-radius:11px;
+    padding:8px 10px;
+  }
+  .char-badge{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    font-family:'Shippori Mincho', serif;font-weight:800;font-size:11px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .char-card img{width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0;}
+  .char-card-info{flex:1;min-width:0;}
+  .char-card-name{font-size:13px;font-weight:700;}
+  .char-card-feature{font-size:11.5px;color:var(--sumi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .char-card button{
+    font-size:11px;font-weight:700;
+    padding:6px 10px;border-radius:8px;
+    border:1.5px solid #B0442F;color:#B0442F;background:#fff;
+    cursor:pointer;flex-shrink:0;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+  }
+
+  .sheet-actions{display:flex;gap:8px;margin-top:14px;}
+  .sheet-actions button{
+    flex:1;font-size:13px;font-weight:700;padding:11px;border-radius:9px;
+    border:1.5px solid var(--ink);color:var(--ink);background:#fff;cursor:pointer;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+  }
+  #sheetPreview{
+    display:none;
+    margin-top:12px;
+    width:100%;
+    border-radius:10px;
+    border:1.5px solid var(--washi-deep);
+  }
+  #sheetPreview.show{display:block;}
+  .char-copied{
+    font-size:11.5px;
+    color:var(--bamboo);
+    font-weight:700;
+    margin-top:8px;
+    display:none;
+    text-align:center;
+  }
+  .char-copied.show{display:block;}
+
+  /* ---------- Library ---------- */
+  .lib-wrap{margin-top:16px;}
+  .lib-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .lib-item{
+    width:64px;text-align:center;cursor:pointer;position:relative;
+  }
+  .lib-item img{
+    width:56px;height:56px;object-fit:cover;border-radius:10px;
+    border:1.5px solid var(--washi-deep);
+  }
+  .lib-item:hover img{border-color:var(--gold);}
+  .lib-item span{
+    display:block;font-size:10px;color:var(--sumi);margin-top:4px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .lib-item .lib-del{
+    position:absolute;top:-4px;right:2px;
+    width:16px;height:16px;border-radius:50%;
+    background:#B0442F;color:#fff;font-size:10px;line-height:16px;
+    text-align:center;cursor:pointer;
+  }
+  .lib-empty{font-size:11.5px;color:#A39C8C;}
 </style>
 <link rel="apple-touch-icon" href="./icon.png">
 </head>
@@ -384,6 +509,39 @@
 
     <div class="chip-label">追加の要望 <span class="opt">(自由入力・任意)</span></div>
     <textarea id="extraInput" placeholder="例：文字は入れないで／背景は暗めで／木のぬくもりを感じる感じで"></textarea>
+
+    <div class="chip-label">キャラクター・ロゴを登録 <span class="opt">(任意・複数OK)</span></div>
+    <div class="charzone">
+      <div class="char-form-row">
+        <label class="thumb-picker" id="thumbPicker">
+          画像
+          <input type="file" id="charFile" accept="image/*" onchange="onCharFileSelect(event)">
+        </label>
+        <div class="char-fields">
+          <input type="text" id="charNameInput" placeholder="名前（例：くるるちゃん）">
+          <input type="text" id="charFeatureInput" placeholder="特徴（例：白い犬、赤いリボン）">
+        </div>
+      </div>
+      <div class="char-hint">画像はブラウザ内だけで扱われます（サーバー送信なし）</div>
+      <button class="btn-add" onclick="addCharacter()">＋ このキャラを追加</button>
+
+      <div class="char-list" id="charList"></div>
+    </div>
+
+    <div class="lib-wrap">
+      <div class="chip-label">保存済みライブラリから選ぶ <span class="opt">(前回までに登録したキャラ)</span></div>
+      <div class="lib-grid" id="libGrid"></div>
+    </div>
+
+    <div class="chip-label" style="margin-top:16px;">参照シート <span class="opt">(登録したキャラを1枚に合成)</span></div>
+    <div class="char-hint" style="margin-top:0;">キャラを1体以上追加すると作れます。QR・プロンプトと一緒にこの1枚だけ貼り付ければOKです</div>
+    <div class="sheet-actions">
+      <button onclick="buildSheet()">🖼 参照シートを作る</button>
+      <button onclick="copySheet()">📋 シートをコピー</button>
+    </div>
+    <canvas id="sheetCanvas" style="display:none;"></canvas>
+    <img id="sheetPreview" alt="キャラクター参照シート">
+    <div class="char-copied" id="sheetCopied">コピーしました！QR・プロンプトと一緒に貼り付けてください</div>
   </div>
 
   <!-- STEP 3: プロンプト生成 -->
@@ -410,8 +568,9 @@
     </div>
     <div class="guide">
       <div class="g"><div class="n">1</div>QRを<br>スクショ</div>
-      <div class="g"><div class="n">2</div>プロンプトを<br>コピー</div>
-      <div class="g"><div class="n">3</div>ChatGPT/Geminiに<br>画像＋テキストを貼付</div>
+      <div class="g"><div class="n">2</div>(あれば)キャラ画像<br>をコピー</div>
+      <div class="g"><div class="n">3</div>プロンプトを<br>コピー</div>
+      <div class="g"><div class="n">4</div>ChatGPT/Geminiに<br>まとめて貼付</div>
     </div>
   </div>
 
@@ -456,6 +615,243 @@
     return active ? active.textContent : '';
   }
 
+  // ---------- Character / logo registration ----------
+  const LIB_KEY = 'dojoQrCharLibrary';
+  let characters = [];      // current session's characters for this QR
+  let pendingImg = null;    // dataURL staged in the add-form
+  let sheetCanvas = document.getElementById('sheetCanvas');
+
+  function onCharFileSelect(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      pendingImg = ev.target.result;
+      const picker = document.getElementById('thumbPicker');
+      picker.classList.add('has-img');
+      picker.innerHTML = '<img src="'+pendingImg+'" alt=""><input type="file" id="charFile" accept="image/*" onchange="onCharFileSelect(event)">';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addCharacter(){
+    const name = document.getElementById('charNameInput').value.trim();
+    const feature = document.getElementById('charFeatureInput').value.trim();
+    if(!name && !feature && !pendingImg){ alert('名前・特徴・画像のどれか1つは入れてください'); return; }
+    const item = { id: 'c'+Date.now(), name: name || '名前未設定', feature, img: pendingImg };
+    characters.push(item);
+    upsertLibrary(item);
+
+    // reset form
+    document.getElementById('charNameInput').value = '';
+    document.getElementById('charFeatureInput').value = '';
+    document.getElementById('charFile').value = '';
+    pendingImg = null;
+    const picker = document.getElementById('thumbPicker');
+    picker.classList.remove('has-img');
+    picker.innerHTML = '画像<input type="file" id="charFile" accept="image/*" onchange="onCharFileSelect(event)">';
+
+    renderCharList();
+    renderLibrary();
+  }
+
+  function removeCharacter(id){
+    characters = characters.filter(c=>c.id!==id);
+    renderCharList();
+  }
+
+  function renderCharList(){
+    const wrap = document.getElementById('charList');
+    wrap.innerHTML = characters.map((c,i)=>`
+      <div class="char-card">
+        <div class="char-badge">${i+1}</div>
+        ${c.img ? '<img src="'+c.img+'" alt="">' : ''}
+        <div class="char-card-info">
+          <div class="char-card-name">${escapeHtml(c.name)}</div>
+          <div class="char-card-feature">${escapeHtml(c.feature||'')}</div>
+        </div>
+        <button onclick="removeCharacter('${c.id}')">削除</button>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Library (localStorage) ----------
+  function loadLibrary(){
+    try{ return JSON.parse(localStorage.getItem(LIB_KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function saveLibraryData(list){
+    try{ localStorage.setItem(LIB_KEY, JSON.stringify(list)); }
+    catch(e){ /* storage full or unavailable: ignore silently */ }
+  }
+  function upsertLibrary(item){
+    const list = loadLibrary();
+    const idx = list.findIndex(l=>l.name===item.name);
+    const entry = {name:item.name, feature:item.feature, img:item.img, savedAt:Date.now()};
+    if(idx>-1) list[idx] = entry; else list.push(entry);
+    saveLibraryData(list);
+  }
+  function deleteFromLibrary(name, evt){
+    if(evt) evt.stopPropagation();
+    const list = loadLibrary().filter(l=>l.name!==name);
+    saveLibraryData(list);
+    renderLibrary();
+  }
+  function addFromLibrary(name){
+    const list = loadLibrary();
+    const found = list.find(l=>l.name===name);
+    if(!found) return;
+    characters.push({ id:'c'+Date.now(), name:found.name, feature:found.feature, img:found.img });
+    renderCharList();
+  }
+  function renderLibrary(){
+    const list = loadLibrary();
+    const grid = document.getElementById('libGrid');
+    if(list.length===0){
+      grid.innerHTML = '<div class="lib-empty">まだ保存されたキャラクターはありません</div>';
+      return;
+    }
+    grid.innerHTML = list.map(l=>`
+      <div class="lib-item" onclick="addFromLibrary('${l.name.replace(/'/g,"\\'")}')">
+        <div class="lib-del" onclick="deleteFromLibrary('${l.name.replace(/'/g,"\\'")}', event)">×</div>
+        ${l.img ? '<img src="'+l.img+'" alt="">' : '<div style="width:56px;height:56px;border-radius:10px;background:#EAE2CC;"></div>'}
+        <span>${escapeHtml(l.name)}</span>
+      </div>
+    `).join('');
+  }
+  renderLibrary();
+
+  // ---------- Reference sheet (canvas composite) ----------
+  function drawSheet(){
+    const n = characters.length;
+    if(n===0){ alert('先にキャラクターを1体以上追加してください'); return false; }
+    const cell = 190, imgSize = 160, pad = 18, textH = 46;
+    const cols = n<=2 ? n : (n===3 ? 3 : Math.ceil(Math.sqrt(n)));
+    const rows = Math.ceil(n/cols);
+    sheetCanvas.width = cols*cell + pad*2;
+    sheetCanvas.height = rows*(cell+textH) + pad*2;
+    const ctx = sheetCanvas.getContext('2d');
+    ctx.fillStyle = '#F3EEE0';
+    ctx.fillRect(0,0,sheetCanvas.width,sheetCanvas.height);
+
+    characters.forEach((c,i)=>{
+      const col = i % cols, row = Math.floor(i/cols);
+      const x = pad + col*cell, y = pad + row*(cell+textH);
+
+      // image (cover-fit, rounded clip)
+      const drawImgCell = (imgEl)=>{
+        ctx.save();
+        roundRectPath(ctx, x + (cell-imgSize)/2, y, imgSize, imgSize, 14);
+        ctx.clip();
+        if(imgEl){
+          const s = Math.max(imgSize/imgEl.width, imgSize/imgEl.height);
+          const dw = imgEl.width*s, dh = imgEl.height*s;
+          ctx.drawImage(imgEl, x+(cell-imgSize)/2-(dw-imgSize)/2, y-(dh-imgSize)/2, dw, dh);
+        } else {
+          ctx.fillStyle = '#EAE2CC';
+          ctx.fillRect(x+(cell-imgSize)/2, y, imgSize, imgSize);
+        }
+        ctx.restore();
+        ctx.strokeStyle = '#B8933E';
+        ctx.lineWidth = 2.5;
+        roundRectPath(ctx, x + (cell-imgSize)/2, y, imgSize, imgSize, 14);
+        ctx.stroke();
+
+        // badge number
+        const bx = x + (cell-imgSize)/2 + 14, by = y + 14;
+        ctx.beginPath();
+        ctx.arc(bx, by, 13, 0, Math.PI*2);
+        ctx.fillStyle = '#1B2A41';
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = '700 13px "Zen Kaku Gothic New", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(i+1), bx, by+1);
+
+        // name / feature
+        ctx.fillStyle = '#1B2A41';
+        ctx.font = '700 14px "Zen Kaku Gothic New", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(truncate(ctx, c.name, cell-10), x+cell/2, y+imgSize+20);
+        ctx.fillStyle = '#6B6459';
+        ctx.font = '400 11.5px "Zen Kaku Gothic New", sans-serif';
+        ctx.fillText(truncate(ctx, c.feature||'', cell-10), x+cell/2, y+imgSize+36);
+      };
+
+      if(c.img){
+        const im = new Image();
+        im.onload = ()=>{ drawImgCell(im); finalizeIfDone(); };
+        im.src = c.img;
+        pendingDraws++;
+      } else {
+        drawImgCell(null);
+      }
+    });
+    return true;
+  }
+
+  function roundRectPath(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+  function truncate(ctx, text, maxW){
+    if(ctx.measureText(text).width<=maxW) return text;
+    let t = text;
+    while(t.length>1 && ctx.measureText(t+'…').width>maxW){ t = t.slice(0,-1); }
+    return t+'…';
+  }
+
+  let pendingDraws = 0;
+  function finalizeIfDone(){
+    pendingDraws--;
+    if(pendingDraws<=0) showSheetPreview();
+  }
+  function showSheetPreview(){
+    const url = sheetCanvas.toDataURL('image/png');
+    const prev = document.getElementById('sheetPreview');
+    prev.src = url;
+    prev.classList.add('show');
+    document.getElementById('sheetCopied').classList.remove('show');
+  }
+
+  function buildSheet(){
+    pendingDraws = 0;
+    const ok = drawSheet();
+    if(ok && characters.every(c=>!c.img)){ showSheetPreview(); } // no images to wait for
+    else if(ok && pendingDraws===0){ showSheetPreview(); }
+  }
+
+  function copySheet(){
+    if(characters.length===0){ alert('先にキャラクターを1体以上追加してください'); return; }
+    if(!document.getElementById('sheetPreview').classList.contains('show')){
+      buildSheet();
+      setTimeout(copySheet, 300);
+      return;
+    }
+    if(!navigator.clipboard || !window.ClipboardItem){
+      alert('このブラウザは画像コピーに対応していません。参照シートを長押しして保存してください。');
+      return;
+    }
+    sheetCanvas.toBlob(blob=>{
+      navigator.clipboard.write([ new ClipboardItem({'image/png': blob}) ]).then(()=>{
+        document.getElementById('sheetCopied').classList.add('show');
+      }).catch(()=>{
+        alert('コピーに失敗しました。参照シートを長押しして保存してください。');
+      });
+    }, 'image/png');
+  }
+
   function makePrompt(){
     const style = getActive('style');
     const color = getActive('color');
@@ -480,6 +876,18 @@
     if(!style && !color && !motif && !usage && !extra){
       lines.push('・おまかせで、世界に一つだけのおしゃれなQRコードにしてください。');
     }
+
+    if(characters.length>0){
+      lines.push('');
+      lines.push('【キャラクター・ロゴについて】');
+      lines.push('・添付したもう1枚の画像は「キャラクター参照シート」です。番号ごとに以下のキャラクターに対応します。');
+      characters.forEach((c,i)=>{
+        lines.push('　' + (i+1) + '．' + c.name + (c.feature ? '：' + c.feature : ''));
+      });
+      lines.push('・それぞれの特徴（色・形・雰囲気）を保ったまま、QRコードのデザインに自然に登場させてください。');
+      lines.push('・キャラクターはQRコードの読み取り部分にはかからないように配置してください。');
+    }
+
     lines.push('');
     lines.push('世界に一つだけの、プロが作ったようなアートQRコードにしてください。');
 
